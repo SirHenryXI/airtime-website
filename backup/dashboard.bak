@@ -1,0 +1,665 @@
+<?php
+require("APIClient.php");
+require("config.php");
+
+//Authentication
+/*
+$login = trim($_POST['atpassword']);
+
+if($login == ''){
+    header( 'Location: http://airtimeapp.com/cms/index.php');
+    exit;
+}
+
+if($login != 'Airtime2015'){
+    header( 'Location: http://airtimeapp.com/cms/index.php');
+    exit;
+}
+*/
+
+//Set up API class
+$api = new APIClient();
+
+
+
+
+//Sublocations
+
+//Insert
+if(isset($_POST['addSublocationName'])){
+    $sublocationName = $_POST['addSublocationName'];
+    $api->addSublocation($sublocationName);
+}
+
+//Edit
+if(isset($_POST['editSublocationName'])){
+    $sublocationID = $_POST['editSublocationID'];
+    $sublocationName = $_POST['editSublocationName'];
+    $api->updateSublocation($sublocationID,$sublocationName);
+}
+
+//Delete
+if(isset($_POST['deleteSublocationID'])){
+    $sublocationID = $_POST['deleteSublocationID'];
+    $api->deleteSublocation($sublocationID);
+}
+
+
+//Locations
+
+//Insert
+if(isset($_POST['addLocationName'])){
+    $locationName = $_POST['addLocationName'];
+    $api->addLocation($locationName);
+}
+
+//Edit
+if(isset($_POST['editLocationName'])){
+    $locationID = $_POST['editLocationID'];
+    $locationName = $_POST['editLocationName'];
+    $api->updateLocation($locationID,$locationName);
+}
+
+//Delete
+if(isset($_POST['deleteLocationID'])){
+    $locationID = $_POST['deleteLocationID'];
+    $api->deleteLocation($locationID);
+}
+
+
+
+
+//Get beacons, locations, and sublocations from API to display in tables
+
+$endpoints = array(
+    $apiEndpoint.'/beacons/'.$udid,
+    $apiEndpoint.'/locations',
+    $apiEndpoint.'/sublocations',
+);
+
+$response = $api->multiRequest($endpoints);
+
+$beacons = json_decode($response[0])->beacons;
+$beaconsCount = count($beacons);
+
+$locations = json_decode($response[1])->locations;
+$locationsCount = count($locations);
+
+$sublocations = json_decode($response[2])->sublocations;
+$sublocationsCount = count($sublocations);
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Dashboard">
+    <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+    <meta name="robots" content="noindex">
+    
+    <title>AirTime</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <!--external css-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/zabuto_calendar.css">
+    <link rel="stylesheet" type="text/css" href="assets/js/gritter/css/jquery.gritter.css" />
+    <link rel="stylesheet" type="text/css" href="assets/lineicons/style.css">    
+    
+    <!-- Custom styles for this template -->
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style-responsive.css" rel="stylesheet">
+
+    <script src="assets/js/chart-master/Chart.js"></script>
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+  <section id="container" >
+      <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+      *********************************************************************************************************************************************************** -->
+      <!--header start-->
+      <header class="header black-bg">
+      <div class="airtime-logo">
+            <img src="assets/img/logo.png">
+      </div>
+
+
+        </header>
+
+
+<body>
+      <section>
+          <section class="wrapper">
+
+              <div class="row">
+                  <div class="col-lg-12 main-chart">
+                  
+                  	<div class="row mtbox">
+                  	<a href="#beacons" aria-controls="beacons" role="tab" data-toggle="tab">
+                  		<div class="col-md-3 col-sm-3 col-sm-offset-1 col-md-offset-1 box0">
+                  			<div class="box1">
+					  			<i class="fa fa-wifi fa-5x"></i>
+					  			<h3>Beacons (<?php echo $beaconsCount; ?>)</h3>
+                  			</div>
+                  		</div>
+                  	</a>
+                  	
+                  	<a href="#locations" aria-controls="locations" role="tab" data-toggle="tab">
+                  		<div class="col-md-3 col-sm-3 box0">
+                  			<div class="box1">
+					  			<i class="fa fa-location-arrow fa-5x"></i>
+					  			<h3>Locations (<?php echo $locationsCount; ?>)</h3>
+                  			</div>
+                  		</div>
+                  		
+                  	</a>
+                  	<a href="#sublocations" aria-controls="sublocations" role="tab" data-toggle="tab">
+                  		<div class="col-md-3 col-sm-3 box0">
+                  			<div class="box1">
+					  			<i class="fa fa-location-arrow fa-5x"></i>
+					  			<h3>Sublocations (<?php echo $sublocationsCount; ?>)</h3>
+                  			</div>
+                  		</div>                  	
+                  	</div><!-- /row mt --> 
+                  	</a>                     					
+                  </div><!-- /col-lg-9 END SECTION MIDDLE -->
+                <!-- **********************************************************************************************************************************************************
+      RIGHT SIDEBAR CONTENT
+      *********************************************************************************************************************************************************** -->
+            </div>
+        </section>
+
+        <section class="wrapper">
+            <div role="tabpanel">
+                <!-- Tab panes -->
+            </div>
+
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="beacons">
+                    <div class="row mt">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="content-panel">
+                                <h4>Beacons</h4>
+                                <hr>
+                                <table class="table table-striped table-advance table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>UUID</th>
+                                            <th>Location</th>
+                                            <th>Sublocation</th>
+                                            <th>Brand</th>
+                                            <th>Model</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php foreach ($beacons as $beacon){?>
+
+                                        <tr>
+                                            <td><?php echo $beacon->uuid;?></td>
+
+                                            <td><?php echo $beacon->major_name;?></td>
+
+                                            <td><?php echo $beacon->minor_name;?></td>
+
+                                            <td><?php echo $beacon->brand;?></td>
+
+                                            <td><?php echo $beacon->model;?></td>
+
+                                            <td>
+                                              <button class="btn btn-primary btn-xs open-editbeaconDialog" data-toggle="modal" data-target="#editBeaconModal" data-sublocationid='<?php echo $sublocation->id;?>' data-sublocationname='<?php echo $sublocation->name;?>'><i class="fa fa-pencil"></i></button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                              <button class="btn btn-danger btn-xs open-deleteBeaconDialog" data-toggle="modal" data-target="#deleteBeaconModal" data-sublocationid='<?php echo $sublocation->id;?>'><i class="fa fa-trash-o "></i></button> 
+                                            </td>
+                                        </tr><?php } ?>
+                                    </tbody>
+                                </table>
+                            </div><!-- /content-panel -->
+                        </div><!-- /col-md-12 -->
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="locations">
+                    <div class="row mt">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="content-panel">
+                                <h4>Locations
+                                    <div class="pull-right">
+                                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addLocationModal" style="margin-top:-10px; margin-right: 10px;"> Add Location </button>
+                                    </div>
+                                </h4>
+                                <hr>
+                                <table class="table table-striped table-advance table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php foreach ($locations as $location){?>
+
+                                        <tr>
+                                            <td><?php echo $location->id;?></td>
+
+                                            <td><?php echo $location->name;?></td>
+
+                                                                                        <td>
+                                              <button class="btn btn-primary btn-xs open-editLocationDialog" data-toggle="modal" data-target="#editLocationModal" data-locationid ='<?php echo $location->id;?>' data-locationname='<?php echo $location->name;?>'><i class="fa fa-pencil"></i></button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                              <button class="btn btn-danger btn-xs open-deleteLocationDialog" data-toggle="modal" data-target="#deleteLocationModal" data-locationid='<?php echo $location->id;?>'><i class="fa fa-trash-o "></i></button>
+                                            </td>
+                                        </tr><?php } ?>
+                                    </tbody>
+                                </table>
+                            </div><!-- /content-panel -->
+                        </div><!-- /col-md-12 -->
+                        <div class="col-md-1"></div>
+                    </div>                
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="sublocations">
+                    <div class="row mt">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-10">
+                            <div class="content-panel">
+                                <h4>Sublocations
+                                    <div class="pull-right">
+                                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addSublocationModal" style="margin-top:-10px; margin-right: 10px;"> Add Sublocation </button>
+                                    </div>
+                                </h4>
+                                <hr>
+                                <table class="table table-striped table-advance table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php foreach ($sublocations as $sublocation){?>
+
+                                        <tr>
+                                            <td><?php echo $sublocation->id;?></td>
+
+                                            <td><?php echo $sublocation->name;?></td>
+
+                                            <td>
+                                              <button class="btn btn-primary btn-xs open-editSublocationDialog" data-toggle="modal" data-target="#editSublocationModal" data-sublocationid='<?php echo $sublocation->id;?>' data-sublocationname='<?php echo $sublocation->name;?>'><i class="fa fa-pencil"></i></button>&nbsp;&nbsp;&nbsp;&nbsp;
+                                              <button class="btn btn-danger btn-xs open-deleteSublocationDialog" data-toggle="modal" data-target="#deleteSublocationModal" data-sublocationid='<?php echo $sublocation->id;?>'><i class="fa fa-trash-o "></i></button>                                              
+                                            </td>
+                                        </tr><?php } ?>
+                                    </tbody>
+                                </table>
+                            </div><!-- /content-panel -->
+                        </div><!-- /col-md-12 -->
+                        <div class="col-md-1"></div>
+                    </div>                  
+                </div>
+            </div>
+        </section>
+        
+        
+        
+<!----BEACONS-------------------------------------------------------------------->        
+          
+<!-- Edit beacon modal -->
+    <div class="modal fade" id="editBeaconModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Edit Beacon</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editBeaconForm" method="post">
+                        <div class="modal-body">
+                            <label>UUID: <?php echo $beacon->uuid;?></label><br>
+                            <label>Location: 
+                            <select placeholder="Choose a new sublocation">
+                            
+                            <?php foreach ($locations as $location){?>
+                                <option
+                                    value="<?php echo $location->name;?>">
+                                    <?php echo $location->name;?>
+                                </option>
+                            <?php } ?>
+                            </select>
+                            </label><br>
+                             <label>SubLocation: 
+                            <select>
+                            <option disabled="" label="Choose a new sublocation" value="Choose a new sublocation">Choose a new sublocation</option>
+                            <?php foreach ($sublocations as $sublocation){?>
+                                <option
+                                    value="<?php echo $sublocation->name;?>">
+                                    <?php echo $sublocation->name;?>
+                                </option>
+                            <?php } ?>
+                            </select>
+                            </label>
+                            <input type="hidden" name="editbeaconID" id="editBeaconID" value="">
+
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-success">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End edit beacon modal -->
+          
+<!--         Delete beacon modal -->
+    <div class="modal fade" id="deleteBeaconModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Beacon?</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="deleteBeaconForm" method="post">
+                        <div class="modal-body">
+                            <h4>This cannot be undone</h4>
+                            <input type="hidden" name="deleteBeaconID" id="deleteBeaconID" value="">
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End delete beacon modal -->
+          
+<!----LOCATIONS-------------------------------------------------------------------->   
+          
+<!--         Add location modal -->
+    <div class="modal fade" id="addLocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New Location</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addLocationForm" method="post">
+                        <div class="modal-body">
+                            <label>Name</label><br>
+                            <input type="text" name="addLocationName" id="addLocationName" placeholder="Design on Tap">
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-success">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End add location modal -->
+          
+<!--         Edit location modal -->
+    <div class="modal fade" id="editLocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Edit location</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editLocationForm" method="post">
+                        <div class="modal-body">
+                            <label>Name</label><br>
+                            <input type="text" name="editLocationName" id="editLocationName" placeholder="Front Door">
+                            <input type="hidden" name="editLocationID" id="editLocationID" value="">
+
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-success">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End edit location modal -->
+          
+<!--         Delete location modal -->
+    <div class="modal fade" id="deleteLocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Location?</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="deleteLocationForm" method="post">
+                        <div class="modal-body">
+                            <h4>This cannot be undone</h4>
+                            <input type="hidden" name="deleteLocationID" id="deleteLocationID" value="">
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End delete location modal -->
+          
+<!----SUBLOCATIONS-------------------------------------------------------------------->   
+          
+<!--         Add sublocation modal -->
+    <div class="modal fade" id="addSublocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New Sublocation</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="addSublocationForm" method="post">
+                        <div class="modal-body">
+                            <label>Name</label><br>
+                            <input type="text" name="addSublocationName" id="addSublocationName" placeholder="Front Door">
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-success">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End add sublocation modal -->
+
+<!--         Edit sublocation modal -->
+    <div class="modal fade" id="editSublocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Edit Sublocation</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="editSublocationForm" method="post">
+                        <div class="modal-body">
+                            <label>Name</label><br>
+                            <input type="text" name="editSublocationName" id="editSublocationName" placeholder="Front Door">
+                            <input type="hidden" name="editSublocationID" id="editSublocationID" value="">
+
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-success">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End edit sublocation modal -->
+   
+<!--         Delete sublocation modal -->
+    <div class="modal fade" id="deleteSublocationModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Sublocation?</h4>
+                </div>
+
+                <div class="modal-body">
+                    <form id="deleteSublocationForm" method="post">
+                        <div class="modal-body">
+                            <h4>This cannot be undone</h4>
+                            <input type="hidden" name="deleteSublocationID" id="deleteSublocationID" value="">
+                        </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>          
+<!--         End delete sublocation modal -->
+          
+          
+<!------------------------------------------------------------------------>   
+          
+          
+
+
+        
+        
+    </section><!--main content end-->
+    <!--footer start-->
+</body>
+</html>
+  </section>
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/jquery-1.8.3.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+    <script src="assets/js/jquery.scrollTo.min.js"></script>
+    <script src="assets/js/jquery.sparkline.js"></script>
+
+
+    <!--common script for all pages-->
+    <script src="assets/js/common-scripts.js"></script>
+    
+    <script type="text/javascript" src="assets/js/gritter/js/jquery.gritter.js"></script>
+    <script type="text/javascript" src="assets/js/gritter-conf.js"></script>
+
+    <!--script for this page-->
+    <script src="assets/js/sparkline-chart.js"></script>    
+	<script src="assets/js/zabuto_calendar.js"></script>	
+	
+	<script type="application/javascript">
+        
+        //Beacon modals
+       	$(document).on("click", ".open-deleteBeaconDialog", function () {
+	        var BeaconUUID = $(this).data('beacon');
+	        $(".modal-body #beaconLocationID").val(BeaconUUID);
+	    });
+	    
+	   $(document).on("click", ".open-editBeaconDialog", function () {
+	        var BeaconUUID = $(this).data('beaconid');
+	        $(".modal-body #editBeaconID").val(BeaconUUID);
+	        
+	        var beaconLocation = $(this).data('BeaconLoc');
+	        $(".modal-body #editBeaconName").val(beaconLocation);
+           
+           var beaconSublocation = $(this).data('BeaconSubloc');
+	        $(".modal-body #editBeaconName").val(beaconSublocation);
+	    });
+        
+        //Location modals
+       	$(document).on("click", ".open-deleteLocationDialog", function () {
+	        var locationID = $(this).data('locationid');
+	        $(".modal-body #deleteLocationID").val(locationID);
+	    });
+	    
+	   $(document).on("click", ".open-editLocationDialog", function () {
+	        var locationID = $(this).data('locationid');
+	        $(".modal-body #editLocationID").val(locationID);
+	        
+	        var locationName = $(this).data('locationname');
+	        $(".modal-body #editLocationName").val(locationName);
+	    });
+        
+    	//Sublocation modals
+       	$(document).on("click", ".open-deleteSublocationDialog", function () {
+	        var sublocationID = $(this).data('sublocationid');
+	        $(".modal-body #deleteSublocationID").val(sublocationID);
+	    });
+	    
+	   $(document).on("click", ".open-editSublocationDialog", function () {
+	        var sublocationID = $(this).data('sublocationid');
+	        $(".modal-body #editSublocationID").val(sublocationID);
+	        
+	        var sublocationName = $(this).data('sublocationname');
+	        $(".modal-body #editSublocationName").val(sublocationName);
+	    });
+    </script>
+
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,86 @@
+BEACONS
+------------------------
+
+GET All
+
+curl -H "Accept: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" https://airtime.herokuapp.com/beacons
+
+
+
+GET with specified UUID
+
+curl -H "Accept: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" https://airtime.herokuapp.com/beacons/49856B06-45AF-412E-902F-93B6ACE817B1
+
+
+
+POST
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -d '{"uuid":"test uuid","major":"2","minor":"3","brand":"Walmart","model":"walmart model"}' https://airtime.herokuapp.com/beacons
+
+
+
+PUT
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X PUT -d '{"uuid":"test uuid target","major":"22","minor":"43","brand":"Target","model":"Target model"}' https://airtime.herokuapp.com/beacon/18
+
+
+
+DELETE
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X DELETE https://airtime.herokuapp.com/beacon/18
+
+
+
+
+Locations
+------------------------
+
+GET
+
+curl -H "Accept: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" https://airtime.herokuapp.com/locations
+
+
+
+POST
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -d '{"name":"My location"}' https://airtime.herokuapp.com/locations
+
+
+
+PUT
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X PUT -d '{"name":"New name"}' https://airtime.herokuapp.com/location/3
+
+
+
+DELETE
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X DELETE https://airtime.herokuapp.com/location/3
+
+
+
+
+Sublocations
+------------------------
+
+GET
+
+curl -H "Accept: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" https://airtime.herokuapp.com/sublocations
+
+
+
+POST
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -d '{"name":"My sublocation"}' https://airtime.herokuapp.com/sublocations
+
+
+
+PUT
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X PUT -d '{"name":"New name"}' https://airtime.herokuapp.com/sublocation/16
+
+
+
+DELETE
+
+curl -H "Content-Type: application/json" -H "X-Airtime-Token: peWcXrMFjaW0Tz4x" -X DELETE https://airtime.herokuapp.com/sublocation/15
